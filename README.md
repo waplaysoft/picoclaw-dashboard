@@ -40,7 +40,7 @@ A lightweight, single-binary Go application that provides a beautiful web interf
 ### Build from source
 
 ```bash
-git clone https://github.com/waplay/picoclaw-dashboard.git
+git clone https://github.com/waplaysoft/picoclaw-dashboard.git
 cd picoclaw-dashboard
 go build -o picoclaw-dashboard
 ```
@@ -272,13 +272,10 @@ GOOS=windows GOARCH=amd64 go build -o picoclaw-dashboard.exe
 ### Phase 3: PicoClaw Management 🚧
 - [x] PicoClaw service control (Start/Stop/Restart)
 - [ ] Cron task management
-- [ ] Edit PicoClaw configuration
-- [ ] Edit agent files (AGENTS.md, SOUL.md, etc.)
-- [ ] View PicoClaw logs
+- [x] View PicoClaw logs
 
 ### Phase 4: Advanced Features
-- [ ] Log streaming
-- [ ] Alerts and notifications
+- [x] Log streaming
 - [ ] Mobile app (PWA/TWA)
 
 ## Contributing
