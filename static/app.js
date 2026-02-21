@@ -284,8 +284,8 @@ class ServiceControl {
     }
 }
 
-// Initialize dashboard and file explorer when DOM is ready
-    constructor() {
+// File Explorer
+class FileExplorer {
         this.currentPath = '';
         this.filesListEl = document.getElementById('files-list');
         this.breadcrumbEl = document.getElementById('breadcrumb');
