@@ -19,8 +19,12 @@ func main() {
 	hub := websocket.NewHub()
 	go hub.Run()
 
+	// Setup logs service
+	api.InitLogsService("picoclaw") // systemd unit name
+
 	// Setup API routes
 	api.SetupRoutes(hub)
+	api.SetupLogRoutes() // Log routes
 
 	// Broadcast metrics every 5 seconds
 	go func() {
