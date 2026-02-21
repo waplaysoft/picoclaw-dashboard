@@ -10,7 +10,9 @@ A lightweight, single-binary Go application that provides a beautiful web interf
 
 ### Mobile Views
 
-<img src="assets/mobile-1.jpg" alt="Mobile View 1" width="200">  <img src="assets/mobile-2.jpg" alt="Mobile View 2" width="200">  <img src="assets/mobile-3.jpg" alt="Mobile View 3" width="200">
+| | | |
+|-|-|-|
+| <img src="assets/mobile-1.jpg" alt="Mobile View 1" width="200"> | <img src="assets/mobile-2.jpg" alt="Mobile View 2" width="200"> | <img src="assets/mobile-3.jpg" alt="Mobile View 3" width="200"> |
 
 ## Features
 
