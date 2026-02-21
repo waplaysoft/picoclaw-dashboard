@@ -31,7 +31,8 @@ func (s *Service) GetLogs(ctx context.Context, filter LogFilter) ([]LogEntry, er
 
 	// Фильтр по времени
 	if filter.Since != "" {
-		args = append(args, "--since", filter.Since)
+		sinceTime := parseRelativeTime(filter.Since)
+		args = append(args, "--since", sinceTime)
 	}
 
 	// Количество строк (если указано)
@@ -53,6 +54,32 @@ func (s *Service) GetLogs(ctx context.Context, filter LogFilter) ([]LogEntry, er
 	entries := s.parseLogs(stdout.String(), filter)
 
 	return entries, nil
+}
+
+// parseRelativeTime конвертирует относительное время в формат journalctl
+// Например: 5m -> 5 minutes ago, 1h -> 1 hour ago, 24h -> 24 hours ago
+func parseRelativeTime(since string) string {
+	re := regexp.MustCompile(`^(\d+)([mhd])$`)
+	matches := re.FindStringSubmatch(since)
+
+	if matches == nil {
+		// Если не совпало с форматом, возвращаем как есть
+		return since
+	}
+
+	value := matches[1]
+	unit := matches[2]
+
+	switch unit {
+	case "m":
+		return value + " minutes ago"
+	case "h":
+		return value + " hours ago"
+	case "d":
+		return value + " days ago"
+	default:
+		return since
+	}
 }
 
 // parseLogs парсит вывод journalctl и фильтрует по уровню/поиску
