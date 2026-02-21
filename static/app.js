@@ -248,9 +248,23 @@ class ServiceControl {
         this.buttons.restart.disabled = false;
     }
 
+    resetButtonState(action) {
+        const button = this.buttons[action];
+        const icons = {
+            start: '▶️',
+            stop: '⏹️',
+            restart: '🔄',
+        };
+        const labels = {
+            start: 'Start',
+            stop: 'Stop',
+            restart: 'Restart',
+        };
+        button.innerHTML = `<span class="btn-icon">${icons[action]}</span><span>${labels[action]}</span>`;
+    }
+
     async executeAction(action) {
         const button = this.buttons[action];
-        const originalText = button.innerHTML;
 
         // Show loading state
         button.disabled = true;
@@ -276,10 +290,9 @@ class ServiceControl {
         } catch (e) {
             console.error(`Error executing ${action}:`, e);
             alert(`Failed to ${action} service: ${e.message}`);
-
-            // Revert button
-            button.innerHTML = originalText;
-            button.disabled = false;
+        } finally {
+            // Always reset button to original state
+            this.resetButtonState(action);
         }
     }
 }
