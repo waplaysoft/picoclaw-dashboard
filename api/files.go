@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -27,6 +28,7 @@ type FileContentRequest struct {
 func sanitizePath(baseDir, path string) (string, error) {
 	absBase, err := filepath.Abs(baseDir)
 	if err != nil {
+		log.Printf("[sanitizePath] Error getting abs base: %v", err)
 		return "", err
 	}
 
@@ -39,16 +41,22 @@ func sanitizePath(baseDir, path string) (string, error) {
 
 	absPath, err := filepath.Abs(targetPath)
 	if err != nil {
+		log.Printf("[sanitizePath] Error getting abs path: %v", err)
 		return "", err
 	}
 
 	relPath, err := filepath.Rel(absBase, absPath)
 	if err != nil {
+		log.Printf("[sanitizePath] Error getting rel path: %v", err)
 		return "", err
 	}
 
+	log.Printf("[sanitizePath] baseDir=%s, path=%s -> absBase=%s, targetPath=%s, absPath=%s, relPath=%s",
+		baseDir, path, absBase, targetPath, absPath, relPath)
+
 	// Check if path is outside base directory
 	if strings.HasPrefix(relPath, "..") {
+		log.Printf("[sanitizePath] Path outside base: %s", relPath)
 		return "", os.ErrPermission
 	}
 
