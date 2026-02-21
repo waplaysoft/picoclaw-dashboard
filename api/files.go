@@ -86,7 +86,12 @@ func ListFiles(baseDir string) http.HandlerFunc {
 				fileType = "directory"
 			}
 
-			relPath, _ := filepath.Rel(baseDir, filepath.Join(sanitized, f.Name()))
+			absPath := filepath.Join(sanitized, f.Name())
+			relPath, err := filepath.Rel(baseDir, absPath)
+			if err != nil {
+				// Fallback to just filename if relative path fails
+				relPath = f.Name()
+			}
 
 			result = append(result, FileInfo{
 				Name:     f.Name(),
