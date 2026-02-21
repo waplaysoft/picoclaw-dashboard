@@ -91,6 +91,8 @@ func (s *Service) parseLogs(output string, filter LogFilter) []LogEntry {
 	// Формат: YYYY/MM/DD HH:MM:SS [timestamp] [LEVEL] ...
 	logPattern := regexp.MustCompile(`^(\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}) \[.*?\] \[([A-Z]+)\] (.*)`)
 
+	var currentEntry *LogEntry
+
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
 		if line == "" {
@@ -99,13 +101,30 @@ func (s *Service) parseLogs(output string, filter LogFilter) []LogEntry {
 
 		matches := logPattern.FindStringSubmatch(line)
 		if matches == nil {
-			// Если не совпало с паттерном, добавляем как INFO
-			entries = append(entries, LogEntry{
-				Timestamp: time.Now(),
-				Level:     "INFO",
-				Message:   line,
-			})
+			// Если есть текущая запись, добавляем строку к ней
+			if currentEntry != nil {
+				currentEntry.Message += "\n" + line
+			} else {
+				// Если не совпало с паттерном и нет текущей записи, добавляем как INFO
+				entries = append(entries, LogEntry{
+					Timestamp: time.Now(),
+					Level:     "INFO",
+					Message:   line,
+				})
+			}
 			continue
+		}
+
+		// Если есть незавершенная запись, сохраняем её
+		if currentEntry != nil {
+			// Фильтр по уровню
+			if filter.Level == "" || currentEntry.Level == filter.Level {
+				// Фильтр по поиску
+				if filter.Search == "" || strings.Contains(strings.ToLower(currentEntry.Message), strings.ToLower(filter.Search)) ||
+					strings.Contains(strings.ToLower(currentEntry.Level), strings.ToLower(filter.Search)) {
+					entries = append(entries, *currentEntry)
+				}
+			}
 		}
 
 		// Парсим timestamp
@@ -117,22 +136,24 @@ func (s *Service) parseLogs(output string, filter LogFilter) []LogEntry {
 		level := matches[2]
 		message := matches[3]
 
-		// Фильтр по уровню
-		if filter.Level != "" && level != filter.Level {
-			continue
-		}
-
-		// Фильтр по поиску
-		if filter.Search != "" && !strings.Contains(strings.ToLower(message), strings.ToLower(filter.Search)) &&
-			!strings.Contains(strings.ToLower(level), strings.ToLower(filter.Search)) {
-			continue
-		}
-
-		entries = append(entries, LogEntry{
+		// Начинаем новую запись
+		currentEntry = &LogEntry{
 			Timestamp: timestamp,
 			Level:     level,
 			Message:   message,
-		})
+		}
+	}
+
+	// Сохраняем последнюю запись
+	if currentEntry != nil {
+		// Фильтр по уровню
+		if filter.Level == "" || currentEntry.Level == filter.Level {
+			// Фильтр по поиску
+			if filter.Search == "" || strings.Contains(strings.ToLower(currentEntry.Message), strings.ToLower(filter.Search)) ||
+				strings.Contains(strings.ToLower(currentEntry.Level), strings.ToLower(filter.Search)) {
+				entries = append(entries, *currentEntry)
+			}
+		}
 	}
 
 	return entries
@@ -158,8 +179,10 @@ func (s *Service) FollowLogs(ctx context.Context, callback func(LogEntry)) error
 		return fmt.Errorf("start error: %w", err)
 	}
 
-	// Читаем построчно
-	buf := make([]byte, 1024)
+	// Читаем построчно и объединяем многострочные сообщения
+	buf := make([]byte, 4096)
+	var currentEntry *LogEntry
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -168,14 +191,41 @@ func (s *Service) FollowLogs(ctx context.Context, callback func(LogEntry)) error
 		default:
 			n, err := stdout.Read(buf)
 			if err != nil {
+				// Если есть незавершенная запись, отправляем её
+				if currentEntry != nil {
+					callback(*currentEntry)
+				}
 				return err
 			}
 			if n > 0 {
-				line := strings.TrimSpace(string(buf[:n]))
-				if line != "" {
+				chunk := string(buf[:n])
+				// Разбиваем на строки по переносу
+				lines := strings.Split(chunk, "\n")
+
+				for _, line := range lines {
+					line = strings.TrimSpace(line)
+					if line == "" {
+						continue
+					}
+
 					entry := s.parseLogLine(line)
-					if entry != nil {
-						callback(*entry)
+					if entry == nil {
+						continue
+					}
+
+					// Если это продолжение предыдущей записи (тот же timestamp)
+					if currentEntry != nil &&
+						entry.Timestamp.Equal(currentEntry.Timestamp) &&
+						entry.Level == currentEntry.Level {
+						// Добавляем к текущей записи
+						currentEntry.Message += "\n" + entry.Message
+					} else {
+						// Отправляем предыдущую запись
+						if currentEntry != nil {
+							callback(*currentEntry)
+						}
+						// Начинаем новую запись
+						currentEntry = entry
 					}
 				}
 			}
