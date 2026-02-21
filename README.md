@@ -123,7 +123,7 @@ Replace `your-user` with the username running the dashboard.
 
 ```bash
 # Create sudoers file for picoclaw-dashboard
-echo "waplay ALL=(ALL) NOPASSWD: /bin/systemctl picoclaw *" | sudo tee /etc/sudoers.d/picoclaw-dashboard
+echo "your-user ALL=(ALL) NOPASSWD: /bin/systemctl picoclaw *" | sudo tee /etc/sudoers.d/picoclaw-dashboard
 
 # Verify syntax
 sudo visudo -c -f /etc/sudoers.d/picoclaw-dashboard
