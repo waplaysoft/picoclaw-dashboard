@@ -87,6 +87,9 @@ func ListFiles(baseDir string) http.HandlerFunc {
 			return
 		}
 
+		// Get absolute base directory for proper relative path calculation
+		absBaseDir, _ := filepath.Abs(baseDir)
+
 		var result []FileInfo
 		for _, f := range files {
 			fileType := "file"
@@ -95,7 +98,7 @@ func ListFiles(baseDir string) http.HandlerFunc {
 			}
 
 			absPath := filepath.Join(sanitized, f.Name())
-			relPath, err := filepath.Rel(baseDir, absPath)
+			relPath, err := filepath.Rel(absBaseDir, absPath)
 			if err != nil {
 				// Fallback to just filename if relative path fails
 				relPath = f.Name()
