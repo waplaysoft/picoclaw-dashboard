@@ -36,7 +36,7 @@ func main() {
 			}
 			log.Printf("📡 Broadcasting metrics: %+v", health)
 			hub.Broadcast(health)
-			log.Printf("✅ Metrics sent to %d clients", len(hub.Clients))
+			log.Printf("✅ Metrics sent to %d clients", hub.ClientCount())
 		}
 	}()
 

@@ -82,6 +82,10 @@ func (h *Hub) Broadcast(message interface{}) {
 	}
 }
 
+func (h *Hub) ClientCount() int {
+	return len(h.clients)
+}
+
 func HandleWebSocket(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
