@@ -104,14 +104,8 @@ func (s *Service) parseLogs(output string, filter LogFilter) []LogEntry {
 			// Если есть текущая запись, добавляем строку к ней
 			if currentEntry != nil {
 				currentEntry.Message += "\n" + line
-			} else {
-				// Если не совпало с паттерном и нет текущей записи, добавляем как INFO
-				entries = append(entries, LogEntry{
-					Timestamp: time.Now(),
-					Level:     "INFO",
-					Message:   line,
-				})
 			}
+			// Иначе пропускаем строку (это мусор в начале вывода)
 			continue
 		}
 
