@@ -1,9 +1,5 @@
 # 🦞 PicoClaw Dashboard
 
-> Web dashboard for PicoClaw server management with real-time monitoring
-
-> **⚠️ Work in Progress** — This project is currently under active development. Features and APIs may change. Feel free to test it, but expect some rough edges!
-
 A lightweight, single-binary Go application that provides a beautiful web interface for monitoring and managing your PicoClaw server. Designed for use with Tailscale VPN for secure, authentication-free access from any device.
 
 ## Features
@@ -18,6 +14,16 @@ A lightweight, single-binary Go application that provides a beautiful web interf
   - Real-time data streaming
   - Auto-reconnect on connection loss
   - Fallback HTTP polling
+
+- 📁 **File Management**
+  - Browse directories
+  - View and edit files
+  - Create and delete files/directories
+
+- 🎮 **PicoClaw Service Control**
+  - Start, stop, and restart PicoClaw service
+  - Real-time service status indicator
+  - One-click control from the dashboard
 
 - 📱 **Responsive Design**
   - Works on desktop and mobile
@@ -87,6 +93,32 @@ sudo systemctl enable picoclaw-dashboard
 sudo systemctl start picoclaw-dashboard
 ```
 
+## Service Control Setup
+
+To enable the PicoClaw service control buttons (Start/Stop/Restart), you need to configure sudo to allow the dashboard user to control the `picoclaw` service without password prompt.
+
+### Configure sudoers
+
+Add the following line to `/etc/sudoers` (or a file in `/etc/sudoers.d/`):
+
+```bash
+your-user ALL=(ALL) NOPASSWD: /bin/systemctl picoclaw *
+```
+
+Replace `your-user` with the username running the dashboard.
+
+**Example:**
+
+```bash
+# Create sudoers file for picoclaw-dashboard
+echo "waplay ALL=(ALL) NOPASSWD: /bin/systemctl picoclaw *" | sudo tee /etc/sudoers.d/picoclaw-dashboard
+
+# Verify syntax
+sudo visudo -c -f /etc/sudoers.d/picoclaw-dashboard
+```
+
+This allows the dashboard to execute `systemctl picoclaw start`, `systemctl picoclaw stop`, and `systemctl picoclaw restart` without password prompts.
+
 ## API Endpoints
 
 ### REST API
@@ -127,6 +159,17 @@ Response:
     "os": "linux",
     "arch": "amd64"
   }
+}
+```
+
+#### Service Control
+- `GET /api/service/status` - Get PicoClaw service status
+- `POST /api/service/action` - Execute service action (`start`, `stop`, `restart`)
+
+Request body:
+```json
+{
+  "action": "restart"
 }
 ```
 
@@ -180,7 +223,9 @@ Connects and receives JSON updates whenever `/api/health` is polled.
 .
 ├── main.go              # Entry point
 ├── api/
-│   └── health.go        # Health API endpoint
+│   ├── health.go        # Health API endpoint
+│   ├── service.go       # Service control API
+│   └── files.go         # File management API
 ├── websocket/
 │   └── hub.go           # WebSocket hub for real-time updates
 ├── static/              # Embedded static files
@@ -224,15 +269,15 @@ GOOS=windows GOARCH=amd64 go build -o picoclaw-dashboard.exe
 - [x] Edit files
 - [x] Create/delete files
 
-### Phase 3: PicoClaw Management
-- [ ] API for managing cron tasks
+### Phase 3: PicoClaw Management 🚧
+- [x] PicoClaw service control (Start/Stop/Restart)
+- [ ] Cron task management
 - [ ] Edit PicoClaw configuration
 - [ ] Edit agent files (AGENTS.md, SOUL.md, etc.)
 - [ ] View PicoClaw logs
 
 ### Phase 4: Advanced Features
 - [ ] Log streaming
-- [ ] Restart PicoClaw
 - [ ] Alerts and notifications
 - [ ] Mobile app (PWA/TWA)
 
