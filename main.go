@@ -23,17 +23,20 @@ func main() {
 	// Setup API routes
 	api.SetupRoutes(hub)
 
-	// Broadcast metrics every 15 seconds
+	// Broadcast metrics every 5 seconds
 	go func() {
-		ticker := time.NewTicker(15 * time.Second)
+		ticker := time.NewTicker(5 * time.Second)
 		defer ticker.Stop()
 		for range ticker.C {
+			log.Printf("🔄 Fetching health metrics...")
 			health, err := api.GetHealth()
 			if err != nil {
 				log.Printf("⚠️  Error getting health: %v", err)
 				continue
 			}
+			log.Printf("📡 Broadcasting metrics: %+v", health)
 			hub.Broadcast(health)
+			log.Printf("✅ Metrics sent to %d clients", len(hub.Clients))
 		}
 	}()
 
