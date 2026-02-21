@@ -101,11 +101,11 @@ func ControlService(action string) error {
 
 	switch action {
 	case "start":
-		cmd = exec.Command("systemctl", "start", ServiceUnit)
+		cmd = exec.Command("sudo", "-n", "systemctl", "start", ServiceUnit)
 	case "stop":
-		cmd = exec.Command("systemctl", "stop", ServiceUnit)
+		cmd = exec.Command("sudo", "-n", "systemctl", "stop", ServiceUnit)
 	case "restart":
-		cmd = exec.Command("systemctl", "restart", ServiceUnit)
+		cmd = exec.Command("sudo", "-n", "systemctl", "restart", ServiceUnit)
 	default:
 		return fmt.Errorf("invalid action: %s", action)
 	}
