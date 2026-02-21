@@ -75,10 +75,10 @@ class Dashboard {
         this.updateMetric('cpu', data.cpu.usage_percent, `${data.cpu.cores} cores`);
 
         // Update Memory
-        this.updateMetric('mem', data.memory.used_percent, this.formatBytes(data.memory.used) + ' / ' + this.formatBytes(data.memory.total));
+        this.updateMetric('mem', data.memory.used_percent, this.formatBytes(data.memory.used_bytes) + ' / ' + this.formatBytes(data.memory.total_bytes));
 
         // Update Disk
-        this.updateMetric('disk', data.disk.used_percent, this.formatBytes(data.disk.used) + ' / ' + this.formatBytes(data.disk.total));
+        this.updateMetric('disk', data.disk.used_percent, this.formatBytes(data.disk.used_bytes) + ' / ' + this.formatBytes(data.disk.total_bytes));
 
         // Update Uptime
         const uptime = this.formatUptime(data.uptime.uptime_seconds);
