@@ -156,6 +156,15 @@ func (s *Service) parseLogs(output string, filter LogFilter) []LogEntry {
 		}
 	}
 
+	// Сортируем по времени (новые первые)
+	for i := 0; i < len(entries); i++ {
+		for j := i + 1; j < len(entries); j++ {
+			if entries[i].Timestamp.Before(entries[j].Timestamp) {
+				entries[i], entries[j] = entries[j], entries[i]
+			}
+		}
+	}
+
 	return entries
 }
 
@@ -209,7 +218,13 @@ func (s *Service) FollowLogs(ctx context.Context, callback func(LogEntry)) error
 					}
 
 					entry := s.parseLogLine(line)
+
+					// Если строка не совпала с форматом (continuation line)
 					if entry == nil {
+						// Добавляем к текущей записи
+						if currentEntry != nil {
+							currentEntry.Message += "\n" + line
+						}
 						continue
 					}
 
@@ -234,16 +249,14 @@ func (s *Service) FollowLogs(ctx context.Context, callback func(LogEntry)) error
 }
 
 // parseLogLine парсит одну строку лога
+// Возвращает nil если строка не совпадает с форматом лога (это продолжение предыдущей записи)
 func (s *Service) parseLogLine(line string) *LogEntry {
 	logPattern := regexp.MustCompile(`^(\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}) \[.*?\] \[([A-Z]+)\] (.*)`)
 	matches := logPattern.FindStringSubmatch(line)
 
 	if matches == nil {
-		return &LogEntry{
-			Timestamp: time.Now(),
-			Level:     "INFO",
-			Message:   line,
-		}
+		// Не совпало с форматом лога - это continuation line
+		return nil
 	}
 
 	timestamp, err := time.Parse("2006/01/02 15:04:05", matches[1])
