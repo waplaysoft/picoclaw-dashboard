@@ -11,94 +11,123 @@
         <header>
             <h1>🦞 PicoClaw Dashboard</h1>
             <p class="subtitle">Server Management</p>
+
+            <!-- Navigation -->
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-tab="dashboard">📊 Dashboard</button>
+                <button class="nav-tab" data-tab="files">📁 Files</button>
+            </nav>
         </header>
 
+        <!-- Connection status -->
         <div class="status" id="status">
             <span class="status-indicator"></span>
             <span class="status-text">Connecting...</span>
         </div>
 
-        <div class="grid">
-            <!-- CPU Card -->
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-icon">📊</span>
-                    <h3>CPU</h3>
-                </div>
-                <div class="card-body">
-                    <div class="metric-value" id="cpu-value">--</div>
-                    <div class="metric-unit">%</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="cpu-bar"></div>
+        <!-- Dashboard Tab -->
+        <div class="tab-content active" id="tab-dashboard">
+            <div class="grid">
+                <!-- CPU Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">📊</span>
+                        <h3>CPU</h3>
                     </div>
-                    <div class="metric-meta" id="cpu-meta">-- cores</div>
+                    <div class="card-body">
+                        <div class="metric-value" id="cpu-value">--</div>
+                        <div class="metric-unit">%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="cpu-bar"></div>
+                        </div>
+                        <div class="metric-meta" id="cpu-meta">-- cores</div>
+                    </div>
+                </div>
+
+                <!-- Memory Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">💾</span>
+                        <h3>Memory</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="metric-value" id="mem-value">--</div>
+                        <div class="metric-unit">%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="mem-bar"></div>
+                        </div>
+                        <div class="metric-meta" id="mem-meta">-- / --</div>
+                    </div>
+                </div>
+
+                <!-- Disk Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">💿</span>
+                        <h3>Disk</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="metric-value" id="disk-value">--</div>
+                        <div class="metric-unit">%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="disk-bar"></div>
+                        </div>
+                        <div class="metric-meta" id="disk-meta">-- / --</div>
+                    </div>
+                </div>
+
+                <!-- Uptime Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">⏱️</span>
+                        <h3>Uptime</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="metric-value" id="uptime-value">--</div>
+                        <div class="metric-unit">since</div>
+                        <div class="metric-meta" id="uptime-meta">--</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Memory Card -->
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-icon">💾</span>
-                    <h3>Memory</h3>
-                </div>
-                <div class="card-body">
-                    <div class="metric-value" id="mem-value">--</div>
-                    <div class="metric-unit">%</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="mem-bar"></div>
+            <div class="info-section">
+                <h3>Runtime Info</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">OS</span>
+                        <span class="info-value" id="os-value">--</span>
                     </div>
-                    <div class="metric-meta" id="mem-meta">-- / --</div>
-                </div>
-            </div>
-
-            <!-- Disk Card -->
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-icon">💿</span>
-                    <h3>Disk</h3>
-                </div>
-                <div class="card-body">
-                    <div class="metric-value" id="disk-value">--</div>
-                    <div class="metric-unit">%</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="disk-bar"></div>
+                    <div class="info-item">
+                        <span class="info-label">Arch</span>
+                        <span class="info-value" id="arch-value">--</span>
                     </div>
-                    <div class="metric-meta" id="disk-meta">-- / --</div>
-                </div>
-            </div>
-
-            <!-- Uptime Card -->
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-icon">⏱️</span>
-                    <h3>Uptime</h3>
-                </div>
-                <div class="card-body">
-                    <div class="metric-value" id="uptime-value">--</div>
-                    <div class="metric-unit">since</div>
-                    <div class="metric-meta" id="uptime-meta">--</div>
+                    <div class="info-item">
+                        <span class="info-label">Go</span>
+                        <span class="info-value" id="go-value">--</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Updated</span>
+                        <span class="info-value" id="updated-value">--</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="info-section">
-            <h3>Runtime Info</h3>
-            <div class="info-grid">
-                <div class="info-item">
-                    <span class="info-label">OS</span>
-                    <span class="info-value" id="os-value">--</span>
+        <!-- Files Tab -->
+        <div class="tab-content" id="tab-files">
+            <div class="files-section">
+                <div class="files-header">
+                    <div class="breadcrumb" id="breadcrumb">
+                        <span class="breadcrumb-item" data-path="">🏠 Root</span>
+                    </div>
+                    <div class="files-actions">
+                        <button class="btn btn-primary" id="btn-new-file">📄 New File</button>
+                        <button class="btn btn-secondary" id="btn-new-folder">📁 New Folder</button>
+                    </div>
                 </div>
-                <div class="info-item">
-                    <span class="info-label">Arch</span>
-                    <span class="info-value" id="arch-value">--</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Go</span>
-                    <span class="info-value" id="go-value">--</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Updated</span>
-                    <span class="info-value" id="updated-value">--</span>
+
+                <div class="files-list" id="files-list">
+                    <div class="loading">Loading files...</div>
                 </div>
             </div>
         </div>
@@ -106,6 +135,57 @@
         <footer>
             <p>Built with ❤️ for PicoClaw</p>
         </footer>
+    </div>
+
+    <!-- File Editor Modal -->
+    <div class="modal" id="file-editor-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="editor-title">Edit File</h2>
+                <button class="modal-close" id="editor-close">×</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="editor-content" spellcheck="false"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="editor-cancel">Cancel</button>
+                <button class="btn btn-primary" id="editor-save">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Folder Modal -->
+    <div class="modal" id="new-folder-modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>New Folder</h2>
+                <button class="modal-close" id="new-folder-close">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="new-folder-name" placeholder="Folder name" autocomplete="off">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="new-folder-cancel">Cancel</button>
+                <button class="btn btn-primary" id="new-folder-create">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New File Modal -->
+    <div class="modal" id="new-file-modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>New File</h2>
+                <button class="modal-close" id="new-file-close">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="new-file-name" placeholder="File name" autocomplete="off">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="new-file-cancel">Cancel</button>
+                <button class="btn btn-primary" id="new-file-create">Create</button>
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>

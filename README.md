@@ -91,6 +91,7 @@ sudo systemctl start picoclaw-dashboard
 
 ### REST API
 
+#### Health & Metrics
 - `GET /api/health` - Get server health metrics
 
 Response:
@@ -126,6 +127,42 @@ Response:
     "os": "linux",
     "arch": "amd64"
   }
+}
+```
+
+#### File Management
+- `GET /api/files?path=<directory>` - List files in directory (empty for root)
+- `GET /api/file?path=<file>` - Read file contents
+- `PUT /api/file?path=<file>` - Write file contents
+- `DELETE /api/file?path=<path>` - Delete file or directory
+- `POST /api/directory?path=<directory>` - Create directory
+
+**File List Response:**
+```json
+[
+  {
+    "name": "main.go",
+    "path": "main.go",
+    "type": "file",
+    "size": 1024,
+    "modified": "2026-02-21T10:15:00Z",
+    "is_hidden": false
+  },
+  {
+    "name": "static",
+    "path": "static",
+    "type": "directory",
+    "size": 0,
+    "modified": "2026-02-21T10:15:00Z",
+    "is_hidden": false
+  }
+]
+```
+
+**Write File Request:**
+```json
+{
+  "content": "// File content here"
 }
 ```
 
@@ -181,11 +218,11 @@ GOOS=windows GOARCH=amd64 go build -o picoclaw-dashboard.exe
 - [x] Responsive UI
 - [x] Tailscale support
 
-### Phase 2: File Management
-- [ ] File browser
-- [ ] View file contents
-- [ ] Edit files
-- [ ] Create/delete files
+### Phase 2: File Management ✅
+- [x] File browser
+- [x] View file contents
+- [x] Edit files
+- [x] Create/delete files
 
 ### Phase 3: PicoClaw Management
 - [ ] API for managing cron tasks

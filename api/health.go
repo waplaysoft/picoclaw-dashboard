@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"runtime"
 	"time"
@@ -143,4 +142,21 @@ func SetupRoutes(hub *websocket.Hub) {
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		websocket.HandleWebSocket(hub, w, r)
 	})
+
+	// File API endpoints
+	baseDir := "." // Default to working directory
+	http.HandleFunc("/api/files", ListFiles(baseDir))
+	http.HandleFunc("/api/file", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			ReadFile(baseDir)(w, r)
+		case http.MethodPut:
+			WriteFile(baseDir)(w, r)
+		case http.MethodDelete:
+			DeleteFile(baseDir)(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+	http.HandleFunc("/api/directory", CreateDirectory(baseDir))
 }
