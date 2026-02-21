@@ -103,7 +103,11 @@ func (s *Service) parseLogs(output string, filter LogFilter) []LogEntry {
 		if matches == nil {
 			// Если есть текущая запись, добавляем строку к ней
 			if currentEntry != nil {
-				currentEntry.Message += "\n" + line
+				if currentEntry.Message != "" {
+					currentEntry.Message += "\n" + line
+				} else {
+					currentEntry.Message = line
+				}
 			}
 			// Иначе пропускаем строку (это мусор в начале вывода)
 			continue
@@ -217,7 +221,11 @@ func (s *Service) FollowLogs(ctx context.Context, callback func(LogEntry)) error
 					if entry == nil {
 						// Добавляем к текущей записи
 						if currentEntry != nil {
-							currentEntry.Message += "\n" + line
+							if currentEntry.Message != "" {
+								currentEntry.Message += " " + line
+							} else {
+								currentEntry.Message = line
+							}
 						}
 						continue
 					}
@@ -227,7 +235,11 @@ func (s *Service) FollowLogs(ctx context.Context, callback func(LogEntry)) error
 						entry.Timestamp.Equal(currentEntry.Timestamp) &&
 						entry.Level == currentEntry.Level {
 						// Добавляем к текущей записи
-						currentEntry.Message += "\n" + entry.Message
+						if currentEntry.Message != "" {
+							currentEntry.Message += " " + entry.Message
+						} else {
+							currentEntry.Message = entry.Message
+						}
 					} else {
 						// Отправляем предыдущую запись
 						if currentEntry != nil {
